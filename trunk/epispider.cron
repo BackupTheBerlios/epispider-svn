@@ -1,0 +1,1 @@
+0 * * * * wget http://epispider.berlios.de/class.promed.php > /dev/null

@@ -1,0 +1,6 @@
+
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^epispider.hi4dev.org$ [OR]
+RewriteCond %{HTTP_HOST} ^www.epispider.hi4dev.org$
+RewriteRule ^(.*)$ http://www.hi4dev.org/epispider/$1 [R=301,L]
+

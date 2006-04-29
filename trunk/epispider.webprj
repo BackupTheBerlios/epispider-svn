@@ -1,0 +1,45 @@
+<!DOCTYPE webproject>
+<webproject>
+  <project usePreviewPrefix="0" previewPrefix="" type="Local" name="epispider" encoding="iso 8859-1" >
+    <upload/>
+    <author/>
+    <email/>
+    <defaultDTD>-//W3C//DTD XHTML 1.0 Transitional//EN</defaultDTD>
+    <debuggers>
+      <pathmapper/>
+      <Gubed/>
+    </debuggers>
+    <item url="" uploadstatus="1" />
+    <item url="file:///" uploadstatus="1" />
+    <item url="class.promed.php" uploadstatus="1" />
+    <templates>templates/</templates>
+    <toolbars>toolbars/</toolbars>
+    <item url="epispider.cron" uploadstatus="1" />
+    <item url="epispider.sql" uploadstatus="1" />
+    <item url="epispider.php" uploadstatus="1" />
+    <item url="index.php" uploadstatus="1" />
+    <item url="class.mysql.php" uploadstatus="1" />
+    <item url="class.kdd.php" uploadstatus="1" />
+    <item url="class.neuralnet.php" uploadstatus="1" />
+    <item url="class.sensor.php" uploadstatus="1" />
+    <item url="nn.php" uploadstatus="1" />
+    <item url="xor.dat" uploadstatus="1" />
+    <item url="XOR_Run.php" uploadstatus="1" />
+    <item url="XOR_Training.php" uploadstatus="1" />
+    <item url="icd10.sql" uploadstatus="1" />
+    <item url="class.umls.php" uploadstatus="1" />
+    <item url="class.svgmapper.php" uploadstatus="1" />
+    <item url="mapper.htm" uploadstatus="1" />
+    <item url="svg/" uploadstatus="1" />
+    <item url="worldmap.svg.tpl" uploadstatus="1" />
+    <item url="worldmap.svg" uploadstatus="1" />
+    <item url="dump/" uploadstatus="1" />
+    <item url="dump/worldmap.svg" uploadstatus="1" />
+    <item url="svg/mapdata.svg" uploadstatus="1" />
+    <item url="svg/javascript.svg" uploadstatus="1" />
+    <treestatus>
+      <openfolder url="dump" />
+      <openfolder url="svg" />
+    </treestatus>
+  </project>
+</webproject>

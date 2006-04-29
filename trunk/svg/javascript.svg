@@ -1,0 +1,237 @@
+<script type="text/ecmascript"><![CDATA[
+		var svgdoc; 
+		var bar;
+		var pays;
+		var data;
+		var NumberOfCountries;
+		var CountryPath;
+	 	var BarWeekActivated ;
+		var NumberOfGraph;
+		var WeekNumber;
+		var weekName;
+		var CurrentWeek;
+		var DefaultList;
+		var valueCurrentWeek;
+		var mapcolor;
+		var Countryreport;
+		var GraphBars = new Array();
+		var LastWeekInGraph;
+        var s;
+	//--------------------Init function is executed when the map is completely loaded------------------------//	
+	function init(evt){
+			svgdoc= evt.getTarget().getOwnerDocument();
+			svgmap = svgdoc.getElementById("mainMap");
+			pays = svgmap.getChildNodes();
+			data = svgdoc.getElementById("WeeklyData");
+			
+			CountryPath = svgmap.getElementsByTagName("path");
+			graphsParent = svgdoc.getElementById("WeeklyGraph");
+			graphChildren = graphsParent.getChildNodes();
+			NumberOfGraph = 0;
+			NumberOfCountries = 240;
+			//-----------Adding event listeners to country bars--------//
+			for (var i = 0; i  < graphChildren.length; i++) {
+				bar = graphChildren.item(i);
+					if (bar.tagName == "rect") { // we are only interested in bars
+			 		bar.addEventListener("mousedown",ClearPath ,false);
+					bar.addEventListener("click",RecolorPath,false);
+					//var test = bar.getAttribute("id");
+					GraphBars[NumberOfGraph] = bar.getAttribute("id");
+					NumberOfGraph ++;
+					//alert(test)
+					}
+					
+			WeekNumber = "week"+NumberOfGraph; // we set the default week as the last bar
+			}
+			
+		//	for(var e=0; e<graphbars.length; e++){
+			LastWeekInGraph = GraphBars[NumberOfGraph-1];
+		//		alert(LastWeekInGraph)
+		//	}
+		
+			//----------Adding event listeners shapes -------------//
+			for (var j=0; j<CountryPath.length; j++){
+				GetCountrypath = CountryPath.item(j);
+					if (GetCountrypath.tagName == "path"){ //getting path elements only
+					GetCountrypath.addEventListener("mouseover", showCountryInfo,false);
+					GetCountrypath.addEventListener("mouseout", HideCountryInfo,false);
+					GetCountrypath.addEventListener("click",ShowOutbreakInfo ,false)
+					}
+			}
+				
+			DefaultList = svgdoc.getElementById("WeeklyData"); // capturing default list data
+			var DefaultCountriesList=DefaultList.getElementsByTagName(LastWeekInGraph); //getting default country list by default tag name XML tag
+			for (var i=0; i<DefaultCountriesList.length; i++){
+			var CountryInList=DefaultCountriesList.item(i);
+					if (CountryInList.tagName==LastWeekInGraph){                          //getting the tags
+					var CountriesToMap = CountryInList.getAttribute("infotext")+"";        //getting the country code from id
+						for (var c=0; c<NumberOfCountries; c++){           // we check in the list of all countries. 
+							var DefaultCountriesToMap = svgdoc.getElementById(CountriesToMap);
+							    if(DefaultCountriesToMap){           //if we find  a code exiting in the default list
+								Countryreport = CountryInList.getAttribute("value");
+								ReturnMapColor(Countryreport);
+							   	DefaultCountriesToMap.setAttribute("fill",mapcolor); //we color it
+								
+					    		    }
+						}		
+					}
+			}
+			//---------------Getting current weeek---------------------//
+			CurrentWeek = svgdoc.getElementById(WeekNumber);
+			if(CurrentWeek){
+				valueCurrentWeek = CurrentWeek.getAttribute("value");
+				setText("txWeekSpan",valueCurrentWeek);
+				CurrentWeek.setAttribute('style','stroke:#008000; stroke-width:2');
+			}else{
+				setText("txWeekSpan", " ");
+			}
+			//--------------Setting default txt to none----------------//
+			setText("txReport"," ");
+	}
+
+	//---------------------Gets the number or report and return the color of the shape---------------------// 
+	function ReturnMapColor(Countryreport){
+			if(Countryreport>=1 && Countryreport<=3){
+				mapcolor = '#B0E0E6';     //Light blue
+			}if(Countryreport>=4 && Countryreport<=7){
+				mapcolor = '#4682B4';     //Dark blue
+			}if(Countryreport>=8){
+				mapcolor = '#A52A2A';     //Midnight blue
+			}
+		return mapcolor;
+	}
+	
+	//-----------------------------Initialisation of the number of week-------------------------------------//
+	function GetGraphId(evt){
+		BarWeekActivated = evt.getTarget();
+		if (BarWeekActivated){
+			 WeekNumber = BarWeekActivated.getAttribute("id");
+		}
+	}
+	
+	//------------this function recolors the country path when the user clicks on the bar graph-------------//
+	function RecolorPath(evt){  
+
+
+		BarWeekActivated = evt.getTarget();       //we get the bar activated by aclick
+			if (BarWeekActivated){
+			WeekNumber = BarWeekActivated.getAttribute("id")+"";         // getting the triggering bar graph
+			weekName = BarWeekActivated.getAttribute("value")+"";
+			}
+			var weekdata=data.getChildNodes(); //selecting all the child nodes in the week data
+	        s = parseInt(WeekNumber.replace("week",""));
+			var WeekTag=data.getElementsByTagName(WeekNumber) //getting week data from XML data
+				for (a=0; a<WeekTag.length; a++){
+				var WeekBarSelected=WeekTag.item(a);
+					if (WeekBarSelected.tagName==WeekNumber){      //getting the week tag corresponding to the selected week bar
+					var CountryInWeek = WeekBarSelected.getAttribute("infotext")+"";
+						for (var j=0; j<NumberOfCountries; j++){
+							 getCountryPath = svgdoc.getElementById(CountryInWeek);
+							    if(getCountryPath){
+								var Countryreport = WeekBarSelected.getAttribute("value");
+								//-----We create the color range based on the number of report-----//
+								ReturnMapColor(Countryreport);
+								getCountryPath.setAttribute("fill",mapcolor);
+						    	    }
+						}		
+					}
+				}
+		setText("txWeekSpan", weekName);
+		//--------Changes the fill attribute of the bar by adding green thick line around it when click----//
+        	BarWeekActivated.setAttribute('style','stroke:#008000; stroke-width:2'); 
+	
+	}
+
+	//-------------------This function clears the country shape when a new bar graph is clicked---------------//	
+	function ClearPath(evt){
+		for(var k=0; k<CountryPath.length; k++){
+		var path = CountryPath.item(k);
+		path.setAttribute("fill", "white");
+		}
+		//----This piece removes the change in attribute for a bar when a difference bar is clicked-----//
+		for (var i = 0; i < graphChildren.length; i++) {
+			bar = graphChildren.item(i);
+			if (bar.tagName == "rect") { 
+			NumberOfGraph ++;
+				bar.setAttribute('style','');
+			}
+		}
+	}
+
+	//--------------------Thisfunction hide country name and number of reports on mouse-out-----------------//
+	function HideCountryInfo(evt){
+		var countrycode = evt.getTarget().getAttribute("id");
+		 setText("txStatus", "Roll mouse over country to get country info");
+     	 	 setText("txReport"," ");
+	}
+
+	//----------This function shows country name and number of reports on mouse roll-over country-----------//
+	function showCountryInfo(evt){
+		var countryName = evt.getTarget().getAttribute("infotext");        //we get the infotext attribute from the path element (country name)
+		var countryCode = evt.getTarget().getAttribute("id");              // we get the id attribute from the path (country code)
+		var countrycolor = evt.getTarget().getAttribute("fill");           // we get the current country color from the fill attribute
+		CurrentWeek = WeekNumber;       // we get the week active based on user click or default display
+		Countryreport = evt.getTarget().getAttribute("value");
+		setText("txStatus", countryName);
+		if(countrycolor != "white"){
+		var ActiveWeekList=svgdoc.getElementById("WeeklyData");             // We point to the Weeklydata group
+		GetActiveWeek = ActiveWeekList.getElementsByTagName(CurrentWeek);   //we get all the week data with tag name == to current week (week(i))
+			for (a=0; a<GetActiveWeek.length; a++){                     //we browse this list week 
+			    var MyWeek=GetActiveWeek.item(a);
+			    if(MyWeek.tagName == CurrentWeek){
+			    var getCountryCode=MyWeek.getAttribute("infotext");
+			       if(getCountryCode == countryCode){
+			       var getCountryValue=MyWeek.getAttribute("value");
+			        	setText("txReport","Number of Promed reports for that week = "+getCountryValue);
+			        
+			        }	
+			    }
+			}
+		}
+
+	}
+
+	function ShowOutbreakInfo(evt){
+		var CountryId = evt.getTarget().getAttribute("id");
+		
+		var id=CountryId+"_"+WeekNumber+"";
+		var DiseaseWeekSelected=svgdoc.getElementById("data");
+		var countrycolor = evt.getTarget().getAttribute("fill");
+	    s = parseInt(LastWeekInGraph.replace("week",""));
+		if(DiseaseWeekSelected){
+			var GetReports = DiseaseWeekSelected.getElementsByTagName(id);
+	
+			for(var i=0; i<GetReports.length;i++){
+				var Reports = GetReports.item(i);
+					if(Reports.tagName==id){
+						var montest = Reports.getAttribute("info"); 
+					}
+			}
+			setText("outbreakInfo",montest);
+		}
+		if(countrycolor != "white"){
+	   //var s = parseInt(WeekNumber.replace("week",""));
+	   showModalDialog("http://epispider.berlios.de/dialog.php?country_id="+CountryId.toUpperCase()+"&week="+s,"dialogHeight: 250px; dialogWidth: 300px; dialogTop: 300px; dialogLeft: 300px; edge: Sunken; center: Yes; help: No; resizable: No; status: No;");
+	//	showModelessDialog("http://www.google.com","dialogHeight: 250px; dialogWidth: 300px; dialogTop: 300px; dialogLeft: 300px; edge: Sunken; center: Yes; help: No; resizable: No; status: No;");
+	//	MyWin = showModalDialog("http://www.google.com","resizable:No;help:no;unadorned:No;dependent:No;dialogWidth:150px;dialogHeight:100px;dialogLeft:x+'px';dialogTop:y+'px'");
+		//MyWin.document.write(CountryId);
+		}
+ 	
+
+	}
+	//-------This function replaces the text with the country name or number of report.Used by ShowCountryInfo function-------//
+  	function setText(id, s){
+     	       var tx = document.getElementById(id);
+    	        while(tx.firstChild){
+    	            tx.removeChild(tx.firstChild);
+    	        }
+            tx.appendChild(document.createTextNode(s));
+        }
+
+//===============================================================================================================================================//
+
+
+//===============================================================================================================================================//
+	
+]]>
+</script>
